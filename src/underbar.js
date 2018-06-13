@@ -211,18 +211,70 @@
   _.contains = function(collection, target) {
     // TIP: Many iteration problems can be most easily expressed in
     // terms of reduce(). Here's a freebie to demonstrate!
-    return _.reduce(collection, function(wasFound, item) {
-      if (wasFound) {
-        return true;
+    if(collection instanceof Object){
+      // iterate over the object keys, and check the corresponding values against the 'target':
+      var keys = Object.keys(collection);
+      for(var i = 0; i < keys.length; i++){
+        if(collection[keys[i]] === target){
+          return true;
+        } else {
+          return false;
+        }
       }
-      return item === target;
-    }, false);
+    } else {
+      for(var i = 0; i < collection.length; i++){
+        if(collection[i] === target){
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+
   };
 
 //
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
+    var isTrue;
+    if(iterator === undefined){
+      if(collection.length === 0){
+        return true;
+      } else {
+        if(collection.length === 1){
+          if(collection[0] === 0){
+            return false;
+          } else if(collection[0] === 1){
+            return true;
+          }
+        }
+      }
+      for(var i = 0; i < collection.length; i++){
+        if(collection[i] === false || collection[i] === undefined){
+          isTrue = false;
+        }
+
+      }
+      if(isTrue === false){
+        return false;
+      } else {
+        return true;
+      }      
+    } else {
+      collection.forEach(function(element){
+        if(!iterator(element)){
+          isTrue = false;
+        }
+      })
+      if(isTrue === false){
+        return false;
+      } else {
+        return true;
+      }
+    }
+
+  
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
@@ -252,14 +304,26 @@
   //   
   _.extend = function(obj) {
     var args = Array.prototype.slice.call(arguments);
+
     // [{base}, {newObj1}, {newObj2}]
     // For every argument starting at index 1,
-    // for every key in that argument, 
-    // push the corresponding key/value pair into argument at index 0                                                                         
+    for(var i = 1; i < args.length; i++){
+
+      // create an array of keys for the argument in question:
+      var keys = Object.keys(args[i]);
+
+      // for every key in that argument, push the corresponding key/value pair into argument at index 0 (the starting object)
+      keys.forEach(function(key){
+        args[0][key] = args[i][key];
+      })
+    }
+    // return the first argument, which now has the new key/value pairs
+    return args[0];                                                
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
+
   _.defaults = function(obj) {
   };
 
