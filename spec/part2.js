@@ -167,7 +167,7 @@
         expect(_.some([false, false, false])).to.be.false;
       });
     });
-
+//
     describe('extend', function() {
 
       it('returns the first argument', function() {

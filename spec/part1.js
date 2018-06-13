@@ -464,7 +464,7 @@
         expect(memoInCallback).to.equal('memo');
         expect(itemInCallback).to.equal('item');
       });
-
+//
       it('should pass items of the array into the iterator from left to right', function() {
         var orderTraversed = [];
 

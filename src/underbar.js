@@ -219,7 +219,7 @@
     }, false);
   };
 
-
+//
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
@@ -244,13 +244,18 @@
   //
   // Example:
   //   var obj1 = {key1: "something"};
-  //   _.extend(obj1, {
-  //     key2: "something new",
-  //     key3: "something else new"
-  //   }, {
-  //     bla: "even more stuff"
-  //   }); // obj1 now contains key1, key2, key3 and bla
+  //   _.extend(obj1, {key2: "something new", key3: "something else new"}, {bla: "even more stuff"}); // obj1 now contains key1, key2, key3 and bla
+  //     
+  //     
+  //   
+  //     
+  //   
   _.extend = function(obj) {
+    var args = Array.prototype.slice.call(arguments);
+    // [{base}, {newObj1}, {newObj2}]
+    // For every argument starting at index 1,
+    // for every key in that argument, 
+    // push the corresponding key/value pair into argument at index 0                                                                         
   };
 
   // Like extend, but doesn't ever overwrite a key that already
