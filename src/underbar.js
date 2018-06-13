@@ -102,11 +102,53 @@
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
+    var arr1 = array.slice(); 
+    var result = [];
+
+    if(isSorted === false){
+      arr1 = arr1.sort((a,b) => {return a - b});
+    }
+    
+    if(iterator){
+      var t = 0;
+      var f = 0; 
+      arr1.forEach((element) => {
+        if(iterator(element) === true && t === 0){
+          result.push(element);
+          t++;
+        } else if(iterator(element) === false && f === 0){
+          result.push(element);
+          f++; 
+        }
+      });
+    return result;
+    }
+
+    for(var i = 0; i < arr1.length; i++){
+      if(!result.includes(arr1[i])){
+        result.push(arr1[i]);
+      }
+    }
+
+    return result; 
   };
 
 
   // Return the results of applying an iterator to each element.
   _.map = function(collection, iterator) {
+    // _.each = function(collection, iterator)
+    var copy = collection.slice();
+    var results = []; 
+    iterator = iterator || _.identity;
+    // collection.forEach((item) => {
+    //   results.push(iterator(item));
+    // });
+    _.each(collection, (item)=> {
+      results.push(iterator(item));
+    });
+    return results; 
+    
+    
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
@@ -151,8 +193,20 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
-  };
+    iterator = iterator || _.identity;
+    accumulator = accumulator || collection[0];
+    var arr = collection.slice();    
 
+    // For every element in 'collection' array:
+    if(accumulator === 'memo'){
+      arr.forEach(function(element){
+        // Call the iterator function using 'call' (pass in 'memo' and 'item' as arguments)
+        // add return value to variable accumulator
+        accumulator += iterator.call(element, 'memo', 'item');
+      });
+    }
+    return accumulator;
+  }
   // Determine if the array or object contains a given value (using `===`).
   _.contains = function(collection, target) {
     // TIP: Many iteration problems can be most easily expressed in
