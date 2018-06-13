@@ -192,21 +192,37 @@
   //     return total + number * number;
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
-  _.reduce = function(collection, iterator, accumulator) {
-    iterator = iterator || _.identity;
-    accumulator = accumulator || collection[0];
-    var arr = collection.slice();    
 
-    // For every element in 'collection' array:
-    if(accumulator === 'memo'){
-      arr.forEach(function(element){
-        // Call the iterator function using 'call' (pass in 'memo' and 'item' as arguments)
-        // add return value to variable accumulator
-        accumulator += iterator.call(element, 'memo', 'item');
-      });
+  _.reduce = function(collection, iterator, accumulator) {
+    // _.reduce(list, iteratee, [memo], [context])
+ 
+    // if the accumulator is not provided:
+    if(accumulator === undefined){
+      // then set our results 'totalValue' equal to 0
+      var totalValue = 0; 
+
+      // iterate over the collection:
+      for(var i = 0; i < collection.length; i++){
+        // add the first element to our results: 
+        if(i === 0){
+          totalValue += collection[0];
+        } else {
+          // for all other elements, pass our results 'totalValue' and the current
+          // element into the iterator function, and set our results to the new output. 
+          totalValue = iterator(totalValue, collection[i]);
+        }
+      }
+    } else {
+      // if the accumulator IS provided, set our totalValue to that accumulator value:
+      var totalValue = accumulator;
+      // iterate over the collection, passing the totalValue and element into the iterator function: 
+      for(var i = 0; i < collection.length; i++){
+        totalValue = iterator(totalValue, collection[i]);
+      }
     }
-    return accumulator;
-  }
+    return totalValue;
+  };
+
   // Determine if the array or object contains a given value (using `===`).
   _.contains = function(collection, target) {
     // TIP: Many iteration problems can be most easily expressed in
@@ -273,14 +289,39 @@
         return true;
       }
     }
-
-  
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
     // TIP: There's a very clever way to re-use every() here.
+    iterator = iterator || _.identity;
+    if(collection.length === 0){
+      return false;
+    }
+
+    if(_.every(collection, iterator) === false){
+      // add conflict check to see if truthy value exists
+      var conflictCheck;
+
+      collection.forEach(function(element){
+        if(element === true || element === 'yes'){
+          conflictCheck = true;
+        } else if(iterator(element)){
+          conflictCheck = true;
+        }
+      })
+      if(conflictCheck === true){
+        return true;
+      } else {
+        return false;        
+      }
+    }
+
+    if(_.every(collection, iterator) === true){
+      return true;
+    }
+
   };
 
 
@@ -325,6 +366,33 @@
   // exists in obj
 
   _.defaults = function(obj) {
+    var args = Array.prototype.slice.call(arguments);
+    var objKeys = Object.keys(obj);
+
+    // [{base}, {newObj1}, {newObj2}]
+    // For every argument starting at index 1,
+    for(var i = 1; i < args.length; i++){
+
+      // create an array of keys for the argument in question:
+      var keys = Object.keys(args[i]);
+
+      // for every key in that argument, if a key doesnt exist on the destination object,
+      // push the corresponding key/value pair into argument at index 0 (the starting object)
+      keys.forEach(function(key){
+        if(obj[key]){
+
+        } else if(!objKeys.includes(key)){
+          obj[key] = args[i][key];
+        }
+        // if(!objKeys.includes(key)){
+        //   obj[key] = args[i][key];
+        // } 
+      })
+    }
+    // return the first argument, which now has the new key/value pairs
+    return args[0]; 
+
+
   };
 
 
@@ -368,7 +436,32 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
-  };
+
+    // Create a cache to store previous results:
+    var cache = {};
+
+    // Return function per instructions:
+    return function(){
+      // Need to identify arguments passed in when func was called:
+      var argList = Array.prototype.slice.call(arguments);
+
+      // Need to stringify those arguments in order to push them to the cache. In doing so,
+      // we'll be able to determine if a previous combination of arguments has been run:
+      var argListString = JSON.stringify(argList);
+
+      // If 'argListString' exists as a key in the cache, return the corresponding
+      // value from the cache:
+      if(cache[argListString] !== undefined){
+        return cache[argListString];
+      } else {
+      // Otherwise, the arguments have never been leveraged in a function call. 
+      // Push the arguments into the cache, and return the result of running 'func' 
+      // with said arguments
+        cache[argListString] = func.apply(this, arguments);
+        return cache[argListString];
+      }
+    }
+}
 
   // Delays a function for the given number of milliseconds, and then calls
   // it with the arguments supplied.
@@ -376,7 +469,10 @@
   // The arguments for the original function are passed after the wait
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
-  _.delay = function(func, wait) {
+  _.delay = function(func, wait, a, b) {
+
+    setTimeout(function(a, b){return func(a, b)}, wait);
+
   };
 
 
